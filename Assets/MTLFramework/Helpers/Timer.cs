@@ -18,6 +18,7 @@ namespace MTLFramework.Helper {
         public bool isFrameTimer { get; private set; }
         public bool isFinish { get; private set; } = false;
 
+        // delay 是否完成
         private bool isDelayCompleted = false;
         // 触发间隔时间
         private float elapsedTime = 0f;
@@ -31,7 +32,7 @@ namespace MTLFramework.Helper {
             this.loop = loop;
             this.onStep = onStep;
             this.onComplete = onComplete;
-            this.isFinish = isFameTimer;
+            //this.isFinish = isFameTimer;
         }
 
         public void Update(float deltaTime) {
@@ -45,16 +46,14 @@ namespace MTLFramework.Helper {
                     if (callBeforeStep) {
                         onStep?.Invoke();
                         triggerCount++;
-                        elapsedTime = 0f;
-                    } else
-                        elapsedTime = -delay;
-
+                    }
+                    elapsedTime = 0f;
                 } else
                     return;
             }
 
             elapsedTime += deltaTime;
-            while (elapsedTime >= step && (loop == -1 || loop < triggerCount)) {
+            while (elapsedTime >= step && (loop == -1 || triggerCount < loop)) {
                 triggerCount++;
                 onStep?.Invoke();
                 elapsedTime -= step;

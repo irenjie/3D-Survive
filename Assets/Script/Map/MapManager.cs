@@ -1,0 +1,119 @@
+using MTLFramework.Helper;
+using System.Collections;
+using System.Collections.Generic;
+using UnityEngine;
+
+namespace Survive3D.Map {
+    //public class MapManager : SingletonBehaviour<MapManager> {
+    public class MapManager : MonoBehaviour {
+        // 数据
+        float mapSizeOnWorld;
+        float chunkSizeOnWorld; // 单位 米
+
+        // 配置
+        MapConfig mapConfig;
+        [SerializeField] MapInitData mapInitData;
+
+        // 管理器
+        MapGenerator mapGenerator;
+        Dictionary<Vector2Int, MapChunkController> mapChunkDic;
+        [SerializeField] Transform viewer;
+        Vector3 lastViewPosition = Vector3.one * -1;
+        [SerializeField] bool canUpdateChunk = false;
+        List<MapChunkController> lastVisibleChunkList = new();
+
+        private void Awake() {
+            Init();
+        }
+
+        public void Init() {
+            StartCoroutine(InitInternal());
+        }
+
+        private IEnumerator InitInternal() {
+
+            mapConfig = LoaderHelper.Get().GetAsset<MapConfig>("Config/MapConfig.asset");
+            //mapInitData = new MapInitData();
+
+            mapGenerator = new MapGenerator(mapConfig, mapInitData, null);
+            mapGenerator.GenerateMapData();
+            mapChunkDic = new Dictionary<Vector2Int, MapChunkController>();
+            chunkSizeOnWorld = mapConfig.mapChunkSize * mapConfig.cellSize;
+            mapSizeOnWorld = chunkSizeOnWorld * mapInitData.mapSize;
+            yield break;
+
+
+        }
+
+        private void Update() {
+            UpdateVisibleChunk();
+        }
+
+        #region 地图块相关
+
+        private void UpdateVisibleChunk() {
+            if (viewer.position == lastViewPosition)
+                return;
+            lastViewPosition = viewer.position;
+
+            if (!canUpdateChunk)
+                return;
+
+            DoUpdateVisubleChunk();
+        }
+
+        private void DoUpdateVisubleChunk() {
+            Vector2Int currentChunkIndex = GetMapChunkIndexByWorldPosition(viewer.position);
+            // 关闭不需要显示的地块
+            for (int i = lastVisibleChunkList.Count - 1; i >= 0; i--) {
+                Vector2Int chunkIndex = lastVisibleChunkList[i].chunkIndex;
+                if (Mathf.Abs(chunkIndex.x - currentChunkIndex.x) > mapConfig.viewDinstance
+                    || Mathf.Abs(chunkIndex.y - currentChunkIndex.y) > mapConfig.viewDinstance) {
+                    lastVisibleChunkList[i].SetActive(false);
+                    lastVisibleChunkList.RemoveAt(i);
+                }
+            }
+
+            int startX = currentChunkIndex.x - mapConfig.viewDinstance;
+            int startY = currentChunkIndex.y - mapConfig.viewDinstance;
+            // 开启要展示的地块
+            for (int x = 0; x < 2 * mapConfig.viewDinstance + 1; x++) {
+                for (int y = 0; y < 2 * mapConfig.viewDinstance + 1; y++) {
+                    Vector2Int chunkIndex = new Vector2Int(startX + x, startY + y);
+                    if (mapChunkDic.TryGetValue(chunkIndex, out var chunk)) {
+                        if (!lastVisibleChunkList.Contains(chunk)) {
+                            lastVisibleChunkList.Add(chunk);
+                            chunk.SetActive(true);
+                        }
+                    } else {
+                        chunk = GenerateMapChunk(chunkIndex);
+                    }
+                }
+            }
+            canUpdateChunk = false;
+            TimerManager.Get().AddTimer(this, 1, 0, 1, false, null, () => canUpdateChunk = true);
+
+        }
+
+        private Vector2Int GetMapChunkIndexByWorldPosition(Vector3 worldPostion) {
+            int x = Mathf.Clamp(Mathf.FloorToInt(worldPostion.x / chunkSizeOnWorld), 0, mapInitData.mapSize);
+            int y = Mathf.Clamp(Mathf.FloorToInt(worldPostion.z / chunkSizeOnWorld), 0, mapInitData.mapSize);
+            return new Vector2Int(x, y);
+        }
+
+        public MapChunkController GetMapChunkByWorldPosition(Vector3 worldPostion) {
+            return mapChunkDic[GetMapChunkIndexByWorldPosition(worldPostion)];
+        }
+
+        private MapChunkController GenerateMapChunk(Vector2Int index, MapChunkData mapChunkData = null) {
+            if (index.x < 0 || index.y < 0 || index.x > mapInitData.mapSize - 1 || index.y > mapInitData.mapSize - 1)
+                return null;
+            MapChunkController chunkController = mapGenerator.GenerateMapChunk(index, transform, mapChunkData, null);
+            mapChunkDic.Add(index, chunkController);
+            return chunkController;
+        }
+
+        #endregion
+
+    }
+}

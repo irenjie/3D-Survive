@@ -29,7 +29,7 @@ namespace Survive3D.Map {
             for (int x = 1; x <= mapWidth; x++) {
                 AddCell(x, mapHeight);
             }
-            for (int z = 1; z <= mapHeight; z++) {
+            for (int z = 1; z < mapHeight; z++) {
                 AddCell(mapWidth, z);
             }
 
@@ -58,7 +58,7 @@ namespace Survive3D.Map {
 
         public void SetVertexType(Vector2Int vertexIndex, MapVertexType type) {
             MapVertex vertex = GetVertex(vertexIndex);
-            if (vertex == null)
+            if (vertex == null || vertex.vertexType == type)
                 return;
 
             vertex.vertexType = type;
@@ -103,7 +103,7 @@ namespace Survive3D.Map {
         }
 
         public MapCell GetLeftBottomMapCell(Vector2Int vertexIndex) {
-            return GetCell(vertexIndex.x + 1, vertexIndex.y);
+            return GetCell(vertexIndex);
         }
 
         public MapCell GetRightBottomMapCell(Vector2Int vertexIndex) {
@@ -151,6 +151,7 @@ namespace Survive3D.Map {
     public class MapCell {
         // 位置为格子中心
         public Vector3 Position;
+        // 0：森林 >=1：不同形状的沼泽格子
         public int TextureIndex;
     }
 }

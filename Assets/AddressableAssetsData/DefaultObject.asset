@@ -9,7 +9,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: dc3d8f8d4c270774ba22f9debaaf85ca, type: 3}
-  m_Name: "\u5730\u56FE\u7269\u54C1\u914D\u7F6E"
+  m_Script: {fileID: 11500000, guid: 3a189bb168d8d90478a09ea08c2f3d72, type: 3}
+  m_Name: DefaultObject
   m_EditorClassIdentifier: 
-  IsEmpty: 0
+  m_AddressableAssetSettingsGuid: 996327bfe386c7d478991225b890e6d3
