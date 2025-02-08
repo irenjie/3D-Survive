@@ -1,4 +1,5 @@
 using MTLFramework.Helper;
+using Survive3D.MapObject;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -13,6 +14,7 @@ namespace Survive3D.Map {
         // 配置
         MapConfig mapConfig;
         [SerializeField] MapInitData mapInitData;
+        private Dictionary<MapVertexType, List<MapObjectConfig>> spawnMapObjectConfigDic = new();// 某个类型可以生成那些地图对象配置
 
         // 管理器
         MapGenerator mapGenerator;
@@ -21,6 +23,7 @@ namespace Survive3D.Map {
         Vector3 lastViewPosition = Vector3.one * -1;
         [SerializeField] bool canUpdateChunk = false;
         List<MapChunkController> lastVisibleChunkList = new();
+
 
         private void Awake() {
             Init();
@@ -31,11 +34,18 @@ namespace Survive3D.Map {
         }
 
         private IEnumerator InitInternal() {
+            mapConfig = LoaderHelper.Get().GetAsset<MapConfig>("Config/Map/MapConfig.asset");
 
-            mapConfig = LoaderHelper.Get().GetAsset<MapConfig>("Config/MapConfig.asset");
-            //mapInitData = new MapInitData();
+            // 地图物品生成配置
+            spawnMapObjectConfigDic.Add(MapVertexType.Forset, new());
+            spawnMapObjectConfigDic.Add(MapVertexType.Marsh, new());
+            List<MapObjectConfig> allMapObjectConfigs = LoaderHelper.Get().GetAssetsByLabel<MapObjectConfig>("MapObject");
+            foreach (var mapObject in allMapObjectConfigs) {
+                spawnMapObjectConfigDic[mapObject.MapVertexType].Add(mapObject);
+            }
+            allMapObjectConfigs = null;
 
-            mapGenerator = new MapGenerator(mapConfig, mapInitData, null);
+            mapGenerator = new MapGenerator(mapConfig, mapInitData, null, spawnMapObjectConfigDic);
             mapGenerator.GenerateMapData();
             mapChunkDic = new Dictionary<Vector2Int, MapChunkController>();
             chunkSizeOnWorld = mapConfig.mapChunkSize * mapConfig.cellSize;
@@ -95,6 +105,11 @@ namespace Survive3D.Map {
 
         }
 
+        public MapChunkController GetMapChunkController(Vector2Int index) {
+            mapChunkDic.TryGetValue(index, out var chunkController);
+            return chunkController;
+        }
+
         private Vector2Int GetMapChunkIndexByWorldPosition(Vector3 worldPostion) {
             int x = Mathf.Clamp(Mathf.FloorToInt(worldPostion.x / chunkSizeOnWorld), 0, mapInitData.mapSize);
             int y = Mathf.Clamp(Mathf.FloorToInt(worldPostion.z / chunkSizeOnWorld), 0, mapInitData.mapSize);
@@ -111,6 +126,17 @@ namespace Survive3D.Map {
             MapChunkController chunkController = mapGenerator.GenerateMapChunk(index, transform, mapChunkData, null);
             mapChunkDic.Add(index, chunkController);
             return chunkController;
+        }
+
+        #endregion
+
+        #region 地图对象相关
+
+        public void SpawnMapObject(MapChunkController mapChunkController, MapObjectConfig mapObjectConfig, Vector3 pos) {
+            MapObjectData mapObjectData = mapGenerator.GenerateMapObjectData(mapObjectConfig, pos);
+            if (mapObjectData == null)
+                return;
+            mapChunkController.AddMapObject(mapObjectData);
         }
 
         #endregion

@@ -1,0 +1,22 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: dc3d8f8d4c270774ba22f9debaaf85ca, type: 3}
+  m_Name: mushroom_02
+  m_EditorClassIdentifier: 
+  IsEmpty: 0
+  MapVertexType: 2
+  Prefab: {fileID: 139598531759743403, guid: b59abed9a6e680544ac4259cb7fd232c, type: 3}
+  MapIconSprite: {fileID: 21300000, guid: 94ceeba8f12c86245942ccae754fc24e, type: 3}
+  IconSize: 0.5
+  DestoryDays: -1
+  Probability: 20
+  Description: 

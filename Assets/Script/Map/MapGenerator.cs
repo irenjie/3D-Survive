@@ -1,5 +1,8 @@
 
+using MTLFramework.Helper;
+using Survive3D.MapObject;
 using System.Collections;
+using System.Collections.Generic;
 using UnityEngine;
 
 namespace Survive3D.Map {
@@ -7,15 +10,19 @@ namespace Survive3D.Map {
         MapInitData mapInitData;
         MapData mapData;
         MapConfig mapConfig;
+        Dictionary<MapVertexType, List<MapObjectConfig>> spawnMapObjectConfigDic;
+        private int mapObjectForestWeightTotal;
+        private int mapObjectMarshWeightTotal;
 
         private MapGrid mapGrid;
         private Material marshMaterial;
         private Mesh chunkMesh;
 
-        public MapGenerator(MapConfig mapConfig, MapInitData mapInitData, MapData mapData) {
+        public MapGenerator(MapConfig mapConfig, MapInitData mapInitData, MapData mapData, Dictionary<MapVertexType, List<MapObjectConfig>> spawnMapObjectConfigDic) {
             this.mapConfig = mapConfig;
             this.mapInitData = mapInitData;
             this.mapData = mapData;
+            this.spawnMapObjectConfigDic = spawnMapObjectConfigDic;
         }
 
         public void GenerateMapData() {
@@ -32,6 +39,18 @@ namespace Survive3D.Map {
             chunkMesh = GenerateMapMesh(mapConfig.mapChunkSize, mapConfig.mapChunkSize, mapConfig.cellSize);
 
             Random.InitState(mapInitData.spawnSeed);
+
+            List<MapObjectConfig> temp = spawnMapObjectConfigDic[MapVertexType.Forset];
+            foreach (MapObjectConfig mapObject in temp) {
+                mapObjectForestWeightTotal += mapObject.Probability;
+            }
+            temp = spawnMapObjectConfigDic[MapVertexType.Marsh];
+            foreach (MapObjectConfig mapObject in temp) {
+                mapObjectMarshWeightTotal += mapObject.Probability;
+            }
+            temp = null;
+
+
         }
 
         public MapChunkController GenerateMapChunk(Vector2Int chunkIndex, Transform parent, MapChunkData mapChunkData, System.Action callBackForMapTexture) {
@@ -59,6 +78,8 @@ namespace Survive3D.Map {
 
                 Vector3 chunkCenterPosition = position + new Vector3(mapConfig.mapChunkSize * mapConfig.cellSize / 2, 0, mapConfig.mapChunkSize * mapConfig.cellSize / 2);
                 chunkController.Init(chunkIndex, chunkCenterPosition, allForest, mapChunkData);
+
+                GenerateMapChunkData(chunkIndex, chunkController);
 
             }));
 
@@ -174,5 +195,64 @@ namespace Survive3D.Map {
             callback?.Invoke(mapTexture, isAllForest);
 
         }
+
+        #region 地图对象
+
+        void GenerateMapChunkData(Vector2Int chunkIndex, MapChunkController mapChunkController) {
+            int offsetX = chunkIndex.x * mapConfig.mapChunkSize;
+            int offsetY = chunkIndex.y * mapConfig.mapChunkSize;
+
+            for (int x = 1; x < mapConfig.mapChunkSize; x++) {
+                for (int y = 1; y < mapConfig.mapChunkSize; y++) {
+                    MapVertex mapVertex = mapGrid.GetVertex(x + offsetX, y + offsetY);
+                    MapObjectConfig mapObjectConfig = GetMapObjectConfigByWeight(mapVertex.vertexType);
+                    if (!mapObjectConfig.IsEmpty) {
+                        Vector3 position = mapVertex.position + new Vector3(Random.Range(-mapConfig.cellSize / 2, mapConfig.cellSize / 2), 0, Random.Range(-mapConfig.cellSize / 2, mapConfig.cellSize / 2));
+                        MapObjectData mapObjectData = GenerateMapObjectData(mapObjectConfig, position);
+
+                        mapChunkController.AddMapObject(mapObjectData);
+
+                    }
+                }
+            }
+        }
+
+        /// <summary>
+        /// 根据配置的概率获取一个地图对象
+        /// </summary>
+        /// <param name="mapVertexType"></param>
+        /// <returns></returns>
+        private MapObjectConfig GetMapObjectConfigByWeight(MapVertexType mapVertexType) {
+            List<MapObjectConfig> mapObjectConfigs = spawnMapObjectConfigDic[mapVertexType];
+            int weightTotal = mapVertexType == MapVertexType.Forset ? mapObjectForestWeightTotal : mapObjectMarshWeightTotal;
+            int randomValue = Random.Range(1, weightTotal + 1);
+            float temp = 0;
+            foreach (var mapObjectConfig in mapObjectConfigs) {
+                temp += mapObjectConfig.Probability;
+                if (temp >= randomValue)
+                    return mapObjectConfig;
+            }
+
+            return mapObjectConfigs[0];
+        }
+
+        public MapObjectData GenerateMapObjectData(MapObjectConfig mapObjectConfig, Vector3 pos) {
+            if (mapObjectConfig.IsEmpty)
+                return null;
+            return GenerateMapObjectData(mapObjectConfig, pos, mapObjectConfig.DestoryDays);
+        }
+
+        public MapObjectData GenerateMapObjectData(MapObjectConfig mapObjectConfig, Vector3 position, int destroyDays) {
+            MapObjectData mapObjectData = ReferencePool.Acquire<MapObjectData>();
+            mapObjectData.mapObjectConfig = mapObjectConfig;
+            //mapObjectData.ID = mapData.CurrentID;
+            //++mapData.CurrentID;
+            mapObjectData.Position = position;
+            mapObjectData.DestoryDays = destroyDays;
+
+            return mapObjectData;
+        }
+
+        #endregion
     }
 }

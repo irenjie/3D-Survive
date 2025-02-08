@@ -57,7 +57,7 @@ namespace MTLFramework.Helper {
         }
 
         private sealed class ReferenceCollection {
-            private readonly Queue<IReference> references;
+            private readonly Queue<IReference> references = new();
             public readonly Type referenceType;
             // 正在使用的数量
             public int usingReferenceCount { get; private set; }

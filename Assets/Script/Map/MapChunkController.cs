@@ -1,3 +1,5 @@
+using MTLFramework.Helper;
+using Survive3D.MapObject;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -10,6 +12,9 @@ namespace Survive3D.Map {
 
         private bool IsInitialized = false;
         private bool isActive = false;
+
+        List<MapObjectData> mapObjectDatas = new();
+        List<GameObject> realMapObjects = new();
 
         public void Init(Vector2Int chunkIndex, Vector3 centerPosition, bool isAllForest, MapChunkData mapChunkData) {
             this.chunkIndex = chunkIndex;
@@ -27,6 +32,32 @@ namespace Survive3D.Map {
 
             isActive = active;
             gameObject.SetActive(active);
+
+            if (active) {
+                foreach (var mapObjectData in mapObjectDatas) {
+                    InstantiateMapObject(mapObjectData);
+                }
+            } else {
+                foreach (var mapObject in realMapObjects) {
+                    GameObjectPool.Recycle(mapObject);
+                }
+            }
         }
+
+        #region 地图对象相关
+
+        public void AddMapObject(MapObjectData mapObjectData) {
+            InstantiateMapObject(mapObjectData);
+            mapObjectDatas.Add(mapObjectData);
+        }
+
+        private void InstantiateMapObject(MapObjectData mapObjectData) {
+            var GO = GameObjectPool.GetItem(mapObjectData.mapObjectConfig.Prefab);
+            GO.transform.parent = transform;
+            GO.transform.position = mapObjectData.Position;
+            realMapObjects.Add(GO);
+        }
+
+        #endregion
     }
 }
