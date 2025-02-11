@@ -53,7 +53,7 @@ namespace Survive3D.Map {
 
         }
 
-        public MapChunkController GenerateMapChunk(Vector2Int chunkIndex, Transform parent, MapChunkData mapChunkData, System.Action callBackForMapTexture) {
+        public MapChunkController GenerateMapChunk(Vector2Int chunkIndex, Transform parent, MapChunkData mapChunkData, System.Action callback) {
             GameObject chunkObj = new GameObject($"Chunk_{chunkIndex}");
             MapChunkController chunkController = chunkObj.AddComponent<MapChunkController>();
             chunkObj.AddComponent<MeshFilter>().mesh = chunkMesh;
@@ -70,7 +70,7 @@ namespace Survive3D.Map {
                     material.mainTexture = texture;
                     chunkObj.AddComponent<MeshRenderer>().material = material;
                 }
-                callBackForMapTexture?.Invoke();
+                callback?.Invoke();
 
                 Vector3 position = new Vector3(chunkIndex.x * mapConfig.mapChunkSize * mapConfig.cellSize, 0, chunkIndex.y * mapConfig.mapChunkSize * mapConfig.cellSize);
                 chunkController.transform.position = position;
@@ -242,11 +242,12 @@ namespace Survive3D.Map {
             return GenerateMapObjectData(mapObjectConfig, pos, mapObjectConfig.DestoryDays);
         }
 
+        private ulong mapObjectID = 0;
         public MapObjectData GenerateMapObjectData(MapObjectConfig mapObjectConfig, Vector3 position, int destroyDays) {
             MapObjectData mapObjectData = ReferencePool.Acquire<MapObjectData>();
             mapObjectData.mapObjectConfig = mapObjectConfig;
-            //mapObjectData.ID = mapData.CurrentID;
-            //++mapData.CurrentID;
+            mapObjectData.ID = mapObjectID;
+            ++mapObjectID;
             mapObjectData.Position = position;
             mapObjectData.DestoryDays = destroyDays;
 

@@ -28,6 +28,11 @@ namespace MTLFramework.UI {
         public static UIManager Combat => Get(1, "Combat");
         // Ç°ÅÅ½çÃæ
         public static UIManager Front => Get(2, "Front");
+
+        public static UIManager GetUIManager(ushort order, string name) {
+            return Get(order, name);
+        }
+
         private static UIManager Get(ushort order, string name) {
             if (!managers.ContainsKey(order)) {
                 if (root == null) {

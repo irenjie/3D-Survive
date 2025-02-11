@@ -1,5 +1,7 @@
 using MTLFramework.Helper;
+using MTLFramework.UI;
 using Survive3D.MapObject;
+using Survive3D.UI;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -57,6 +59,17 @@ namespace Survive3D.Map {
 
         private void Update() {
             UpdateVisibleChunk();
+
+            if (Input.GetKeyUp(KeyCode.M)) {
+                if (isMapShowing)
+                    CloseMapPanel();
+                else
+                    ShowMapPanel();
+            }
+
+            if (isMapShowing) {
+                UpdateMapUI();
+            }
         }
 
         #region 地图块相关
@@ -123,7 +136,9 @@ namespace Survive3D.Map {
         private MapChunkController GenerateMapChunk(Vector2Int index, MapChunkData mapChunkData = null) {
             if (index.x < 0 || index.y < 0 || index.x > mapInitData.mapSize - 1 || index.y > mapInitData.mapSize - 1)
                 return null;
-            MapChunkController chunkController = mapGenerator.GenerateMapChunk(index, transform, mapChunkData, null);
+            MapChunkController chunkController = mapGenerator.GenerateMapChunk(index, transform, mapChunkData, () => {
+                mapPanel_chunkUpdateList.Add(index);
+            });
             mapChunkDic.Add(index, chunkController);
             return chunkController;
         }
@@ -141,5 +156,39 @@ namespace Survive3D.Map {
 
         #endregion
 
+
+        #region UI相关
+        private bool isMapShowing = false;
+        // 待更新地图块列表
+        private List<Vector2Int> mapPanel_chunkUpdateList = new();
+        private MapWindowPanel mapWindowPanel;
+
+        /// <summary>
+        /// 打开地图UI
+        /// </summary>
+        private void ShowMapPanel() {
+            mapWindowPanel = UIManager.GetUIManager(3, "MapPanel").Navigation<MapWindowPanel>("Assets/Prefabs/UI/MapWindowPanel.prefab");
+            mapWindowPanel.Init(mapInitData.mapSize, mapConfig.mapChunkSize, mapSizeOnWorld, mapConfig.forestTexutre);
+            isMapShowing = true;
+        }
+
+        void UpdateMapUI() {
+            foreach (Vector2Int chunkIndex in mapPanel_chunkUpdateList) {
+                Texture2D texture = null;
+                MapChunkController chunk = mapChunkDic[chunkIndex];
+                if (!chunk.isAllForest) {
+                    texture = (Texture2D)chunk.GetComponent<MeshRenderer>().material.mainTexture;
+                }
+                mapWindowPanel.AddMapChunk(chunkIndex, chunk.mapObjectDatas, texture);
+            }
+            mapPanel_chunkUpdateList.Clear();
+            mapWindowPanel.UpdatePivot(viewer.position);
+        }
+
+        private void CloseMapPanel() {
+            UIManager.Front.Close(mapWindowPanel);
+            isMapShowing = false;
+        }
+        #endregion
     }
 }

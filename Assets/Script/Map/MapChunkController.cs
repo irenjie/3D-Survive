@@ -13,7 +13,7 @@ namespace Survive3D.Map {
         private bool IsInitialized = false;
         private bool isActive = false;
 
-        List<MapObjectData> mapObjectDatas = new();
+        public List<MapObjectData> mapObjectDatas = new();
         List<GameObject> realMapObjects = new();
 
         public void Init(Vector2Int chunkIndex, Vector3 centerPosition, bool isAllForest, MapChunkData mapChunkData) {
