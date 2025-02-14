@@ -1,6 +1,7 @@
 using MTLFramework.Helper;
 using MTLFramework.UI;
 using Survive3D.MapObject;
+using Survive3D.Player;
 using Survive3D.UI;
 using System.Collections;
 using System.Collections.Generic;
@@ -12,6 +13,7 @@ namespace Survive3D.Map {
         // 数据
         float mapSizeOnWorld;
         float chunkSizeOnWorld; // 单位 米
+        MeshCollider meshCollider;
 
         // 配置
         MapConfig mapConfig;
@@ -29,13 +31,16 @@ namespace Survive3D.Map {
 
         private void Awake() {
             Init();
+            GameObject.Find("Main Camera").GetComponent<CameraController>().Init(mapSizeOnWorld);
         }
 
         public void Init() {
             StartCoroutine(InitInternal());
+            viewer.GetComponent<PlayerController>().Init(mapSizeOnWorld);
         }
 
         private IEnumerator InitInternal() {
+
             mapConfig = LoaderHelper.Get().GetAsset<MapConfig>("Config/Map/MapConfig.asset");
 
             // 地图物品生成配置
@@ -52,6 +57,9 @@ namespace Survive3D.Map {
             mapChunkDic = new Dictionary<Vector2Int, MapChunkController>();
             chunkSizeOnWorld = mapConfig.mapChunkSize * mapConfig.cellSize;
             mapSizeOnWorld = chunkSizeOnWorld * mapInitData.mapSize;
+
+            GetComponent<MeshCollider>().sharedMesh = GenerateGroundMesh(mapSizeOnWorld, mapSizeOnWorld);
+
             yield break;
 
 
@@ -156,7 +164,6 @@ namespace Survive3D.Map {
 
         #endregion
 
-
         #region UI相关
         private bool isMapShowing = false;
         // 待更新地图块列表
@@ -190,5 +197,28 @@ namespace Survive3D.Map {
             isMapShowing = false;
         }
         #endregion
+
+        private Mesh GenerateGroundMesh(float height, float width) {
+            Mesh mesh = new Mesh();
+            // 确定顶点在哪里
+            mesh.vertices = new Vector3[]{
+                new Vector3(0,0,0),
+                new Vector3(0,0,height),
+                new Vector3(width,0,height),
+                new Vector3(width,0,0),
+            };
+            // 确定哪些点形成三角形
+            mesh.triangles = new int[]{
+                0,1,2,
+                0,2,3
+            };
+            mesh.uv = new Vector2[]{
+                new Vector3(0,0),
+                new Vector3(0,1),
+                new Vector3(1,1),
+                new Vector3(1,0),
+            };
+            return mesh;
+        }
     }
 }
