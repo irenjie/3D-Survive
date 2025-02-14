@@ -8,6 +8,7 @@ namespace Survive3D.Player {
         FSM<PlayerStateBase> stateMachine;
         public CharacterController characterController { get; private set; }
         public Transform playerTransform { get; private set; }
+        private PlayerModel playerModel;
 
         #region Íæ¼ÒÊýÖµ
         [SerializeField] private float mMoveSpeed;
@@ -24,6 +25,8 @@ namespace Survive3D.Player {
             animator = GetComponent<Animator>();
             playerTransform = transform;
             characterController = GetComponent<CharacterController>();
+            playerModel = GetComponent<PlayerModel>();
+            playerModel.Init();
 
         }
 

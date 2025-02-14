@@ -4,7 +4,7 @@ using UnityEngine;
 
 namespace MTLFramework.Helper {
 
-    public class SingletonBehaviour<T> : MonoBehaviour where T : MonoBehaviour {
+    public class SingletonBehaviour<T> : DelayBehaviour where T : MonoBehaviour {
         private static T _instance;
 
         public static T Get() {

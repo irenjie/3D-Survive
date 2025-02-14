@@ -2,6 +2,7 @@ using MTLFramework.Helper;
 using MTLFramework.UI;
 using Survive3D.MapObject;
 using Survive3D.Player;
+using Survive3D.TimeS;
 using Survive3D.UI;
 using System.Collections;
 using System.Collections.Generic;
@@ -36,7 +37,10 @@ namespace Survive3D.Map {
 
         public void Init() {
             StartCoroutine(InitInternal());
+
+            DontDestroyOnLoad(LoaderHelper.Get().InstantiatePrefab("Assets/Debug/DebugMenu.prefab"));
             viewer.GetComponent<PlayerController>().Init(mapSizeOnWorld);
+            TimeManager.Get().Init();
         }
 
         private IEnumerator InitInternal() {
@@ -174,8 +178,11 @@ namespace Survive3D.Map {
         /// ´ò¿ªµØÍ¼UI
         /// </summary>
         private void ShowMapPanel() {
-            mapWindowPanel = UIManager.GetUIManager(3, "MapPanel").Navigation<MapWindowPanel>("Assets/Prefabs/UI/MapWindowPanel.prefab");
-            mapWindowPanel.Init(mapInitData.mapSize, mapConfig.mapChunkSize, mapSizeOnWorld, mapConfig.forestTexutre);
+            if (mapWindowPanel == null) {
+                mapWindowPanel ??= UIManager.GetUIManager(3, "MapPanel").Navigation<MapWindowPanel>("Assets/Prefabs/UI/MapWindowPanel.prefab");
+                mapWindowPanel.Init(mapInitData.mapSize, mapConfig.mapChunkSize, mapSizeOnWorld, mapConfig.forestTexutre);
+            }
+            mapWindowPanel.SetActive(true);
             isMapShowing = true;
         }
 
@@ -193,7 +200,8 @@ namespace Survive3D.Map {
         }
 
         private void CloseMapPanel() {
-            UIManager.Front.Close(mapWindowPanel);
+            mapWindowPanel?.SetActive(false);
+            //UIManager.GetUIManager(3, "MapPanel").Close(mapWindowPanel);
             isMapShowing = false;
         }
         #endregion

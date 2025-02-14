@@ -129,6 +129,11 @@ namespace Survive3D.UI {
             mapChunkImageDic.Clear();
         }
 
+        public void SetActive(bool active) {
+            if (gameObject.activeSelf == active)
+                return;
+            gameObject.SetActive(active);
+        }
 
     }
 }

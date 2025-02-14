@@ -8,14 +8,22 @@ namespace MTLFramework.Helpers {
     public class AudioHelper : SingletonBehaviour<AudioHelper> {
         List<AudioSource> audioSources = new List<AudioSource>();
 
-        public AudioSource Play(AudioClip clip) {
+        public AudioSource Play(AudioClip clip, int loopCount = 1) {
             if (clip == null)
                 return null;
 
             StopSound(clip);
             var audioSource = GetAudioSource();
             audioSource.clip = clip;
-            audioSource.loop = false;
+            if (loopCount == 1)
+                audioSource.loop = false;
+            else {
+                audioSource.loop = true;
+                if (loopCount > 1)
+                    DelayDo(clip.length * loopCount, () => {
+                        audioSource.Stop();
+                    });
+            }
             audioSource.Play();
 
             return audioSource;
