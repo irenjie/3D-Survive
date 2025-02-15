@@ -179,7 +179,7 @@ namespace Survive3D.Map {
         /// </summary>
         private void ShowMapPanel() {
             if (mapWindowPanel == null) {
-                mapWindowPanel ??= UIManager.GetUIManager(3, "MapPanel").Navigation<MapWindowPanel>("Assets/Prefabs/UI/MapWindowPanel.prefab");
+                mapWindowPanel ??= UIManager.GetUIManager(3, "MapPanel").Navigation<MapWindowPanel>("UI/MapWindowPanel.prefab");
                 mapWindowPanel.Init(mapInitData.mapSize, mapConfig.mapChunkSize, mapSizeOnWorld, mapConfig.forestTexutre);
             }
             mapWindowPanel.SetActive(true);

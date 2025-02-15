@@ -15,8 +15,8 @@ MonoBehaviour:
   m_GroupName: UI
   m_GUID: 505cfec239d4add44b53df40355bd5ff
   m_SerializeEntries:
-  - m_GUID: 2224995b103b5d94085342c2ab15d2c6
-    m_Address: Assets/Prefabs/UI/MapWindowPanel.prefab
+  - m_GUID: a261fe05468702448a949b5e0ebc8d98
+    m_Address: UI
     m_ReadOnly: 0
     m_SerializedLabels: []
     FlaggedDuringContentUpdateRestriction: 0
