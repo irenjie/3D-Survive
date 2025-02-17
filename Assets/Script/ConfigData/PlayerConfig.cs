@@ -1,8 +1,9 @@
+using Sirenix.OdinInspector;
 using System.Collections.Generic;
 using UnityEngine;
 
 namespace Program.Data {
-    public class PlayerConfig {
+    public class PlayerConfig:SerializedScriptableObject {
         public int id { get; private set; }
         public string name { get; private set; }
         public int age { get; private set; }

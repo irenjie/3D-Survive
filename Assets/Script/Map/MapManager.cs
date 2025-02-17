@@ -24,7 +24,7 @@ namespace Survive3D.Map {
         // 管理器
         MapGenerator mapGenerator;
         Dictionary<Vector2Int, MapChunkController> mapChunkDic;
-        [SerializeField] Transform viewer;
+        [SerializeField] Transform playerTF;
         Vector3 lastViewPosition = Vector3.one * -1;
         [SerializeField] bool canUpdateChunk = false;
         List<MapChunkController> lastVisibleChunkList = new();
@@ -34,13 +34,13 @@ namespace Survive3D.Map {
             Init();
             GameObject.Find("Main Camera").GetComponent<CameraController>().Init(mapSizeOnWorld);
         }
+        private void Start() {
+
+            playerTF.GetComponent<PlayerController>().Init(mapSizeOnWorld);
+        }
 
         public void Init() {
             StartCoroutine(InitInternal());
-
-            DontDestroyOnLoad(LoaderHelper.Get().InstantiatePrefab("Assets/Debug/DebugMenu.prefab"));
-            viewer.GetComponent<PlayerController>().Init(mapSizeOnWorld);
-            TimeManager.Get().Init();
         }
 
         private IEnumerator InitInternal() {
@@ -87,9 +87,9 @@ namespace Survive3D.Map {
         #region 地图块相关
 
         private void UpdateVisibleChunk() {
-            if (viewer.position == lastViewPosition)
+            if (playerTF.position == lastViewPosition)
                 return;
-            lastViewPosition = viewer.position;
+            lastViewPosition = playerTF.position;
 
             if (!canUpdateChunk)
                 return;
@@ -98,7 +98,7 @@ namespace Survive3D.Map {
         }
 
         private void DoUpdateVisubleChunk() {
-            Vector2Int currentChunkIndex = GetMapChunkIndexByWorldPosition(viewer.position);
+            Vector2Int currentChunkIndex = GetMapChunkIndexByWorldPosition(playerTF.position);
             // 关闭不需要显示的地块
             for (int i = lastVisibleChunkList.Count - 1; i >= 0; i--) {
                 Vector2Int chunkIndex = lastVisibleChunkList[i].chunkIndex;
@@ -196,7 +196,7 @@ namespace Survive3D.Map {
                 mapWindowPanel.AddMapChunk(chunkIndex, chunk.mapObjectDatas, texture);
             }
             mapPanel_chunkUpdateList.Clear();
-            mapWindowPanel.UpdatePivot(viewer.position);
+            mapWindowPanel.UpdatePivot(playerTF.position);
         }
 
         private void CloseMapPanel() {

@@ -1,0 +1,91 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 3b2ae376be2424849835268d0929eeb9, type: 3}
+  m_Name: "\u77F3\u9570"
+  m_EditorClassIdentifier: 
+  serializationData:
+    SerializedFormat: 2
+    SerializedBytes: 
+    ReferencedUnityObjects: []
+    SerializedBytesString: 
+    Prefab: {fileID: 0}
+    PrefabModificationsReferencedUnityObjects: []
+    PrefabModifications: []
+    SerializationNodes:
+    - Name: ItemTypeInfo
+      Entry: 7
+      Data: 0|Survive3D.Item.ItemWeaponInfo, Assembly-CSharp
+    - Name: WeaponType
+      Entry: 3
+      Data: 0
+    - Name: PrefabOnPlayer
+      Entry: 6
+      Data: 
+    - Name: PositionOnPlayer
+      Entry: 7
+      Data: UnityEngine.Vector3, UnityEngine.CoreModule
+    - Name: 
+      Entry: 4
+      Data: 0
+    - Name: 
+      Entry: 4
+      Data: 0
+    - Name: 
+      Entry: 4
+      Data: 0
+    - Name: 
+      Entry: 8
+      Data: 
+    - Name: RotationOnPlayer
+      Entry: 7
+      Data: UnityEngine.Vector3, UnityEngine.CoreModule
+    - Name: 
+      Entry: 4
+      Data: 0
+    - Name: 
+      Entry: 4
+      Data: 0
+    - Name: 
+      Entry: 4
+      Data: 0
+    - Name: 
+      Entry: 8
+      Data: 
+    - Name: AnimatorController
+      Entry: 6
+      Data: 
+    - Name: AttackValue
+      Entry: 4
+      Data: 0
+    - Name: AttackDurabilityCost
+      Entry: 4
+      Data: 0
+    - Name: AttackDistance
+      Entry: 4
+      Data: 0
+    - Name: AttackAudio
+      Entry: 6
+      Data: 
+    - Name: HitAudio
+      Entry: 6
+      Data: 
+    - Name: HitEffect
+      Entry: 6
+      Data: 
+    - Name: 
+      Entry: 8
+      Data: 
+  mConfigId: 12
+  Name: "\u77F3\u9570"
+  ItemType: 0
+  Description: "\u53EF\u4EE5\u5272\u8349"
+  Icon: {fileID: 21300000, guid: 6f6057ea5ee5bf4498651d34d6a25bf4, type: 3}
