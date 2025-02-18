@@ -1,4 +1,6 @@
 using MTLFramework.Core;
+using MTLFramework.Event;
+using Survive3D.Data;
 using System;
 using UnityEngine;
 
@@ -9,8 +11,11 @@ namespace Survive3D.Player {
         public CharacterController characterController { get; private set; }
         public Transform playerTransform { get; private set; }
         private PlayerModel playerModel;
+        PlayerConfig playerConfig;
 
         #region 玩家数值
+        private float health;
+        private float hungry;
         [SerializeField] private float mMoveSpeed;
         [SerializeField] private float mRotateSpeed;
         public float moveSpeed => mMoveSpeed;
@@ -27,7 +32,14 @@ namespace Survive3D.Player {
             characterController = GetComponent<CharacterController>();
             playerModel = GetComponent<PlayerModel>();
             playerModel.Init();
+        }
 
+        private void Start() {
+            playerConfig = PlayerConfig.Get();
+            health = playerConfig.MaxHp;
+            hungry = playerConfig.MaxHungry;
+            TriggerHPUpdateEvent();
+            TriggerHungryUpdateEvent();
         }
 
         public void Init(float mapSizeOnWorld) {
@@ -44,12 +56,15 @@ namespace Survive3D.Player {
             stateMachine.AddState(movingState);
             ChangeState(PlayerState.Idle);
             #endregion
+
+
+
         }
 
         // Update is called once per frame
         void Update() {
             stateMachine.OnUpdate();
-            //transform.Translate(new Vector3(Input.GetAxis("Horizontal"), 0, Input.GetAxis("Vertical")) * UnityEngine.Time.deltaTime * 8f);
+            UpdateHungry();
         }
 
         #region 状态与动画
@@ -71,5 +86,29 @@ namespace Survive3D.Player {
         }
         #endregion
 
+        #region 玩家数值
+        private void UpdateHungry() {
+            if (hungry > 0) {
+                hungry -= Time.deltaTime * playerConfig.HungryReduceSpeed;
+                hungry = MathF.Max(hungry, 0);
+                TriggerHungryUpdateEvent();
+            } else {
+                if (health > 0) {
+                    health -= Time.deltaTime * playerConfig.HpReduceSpeedOnHungryIsZero;
+                    health = MathF.Max(health, 0);
+                    TriggerHPUpdateEvent();
+                }
+            }
+        }
+
+        void TriggerHPUpdateEvent() {
+            EventManager.Get().Fire(this, EventID.PlayerHPUpdate, new FloatEventArgs(health));
+        }
+
+        void TriggerHungryUpdateEvent() {
+            EventManager.Get().Fire(this, EventID.PlayerHungryUpdate, new FloatEventArgs(hungry));
+        }
+
+        #endregion
     }
 }

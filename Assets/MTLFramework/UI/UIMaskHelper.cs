@@ -30,7 +30,7 @@ namespace MTLFramework.UI {
             mask.rectTransform.anchorMax = MathHelper.OneVector2;
             mask.color = Color.clear;
 
-            EventManager.Get().Subscribe((int)EventID.SwitchScene, (sender, eventArgs) => {
+            EventManager.Get().Subscribe(EventID.SwitchScene, (sender, eventArgs) => {
                 canvas.worldCamera = Camera.main;
             });
         }

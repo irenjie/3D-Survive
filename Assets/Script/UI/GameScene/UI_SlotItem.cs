@@ -1,11 +1,12 @@
 using Extensions;
 using MTLFramework.UI;
+using Survive3D.Data;
 using System;
 using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
 
-namespace Survive3D.Item {
+namespace Survive3D.Config {
     public class UI_SlotItem : MonoBehaviour, IBeginDragHandler, IEndDragHandler, IDragHandler {
         Image bgImage;
         Image iconImg;

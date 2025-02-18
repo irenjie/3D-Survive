@@ -1,7 +1,8 @@
+using Survive3D.Config;
 using System;
 using UnityEngine;
 
-namespace Survive3D.Item {
+namespace Survive3D.Data {
     [Serializable]
     public class ItemData {
         public ItemConfig config;

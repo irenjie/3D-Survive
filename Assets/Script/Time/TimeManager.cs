@@ -1,3 +1,4 @@
+using MTLFramework.Event;
 using MTLFramework.Helper;
 using MTLFramework.Helpers;
 using UnityEngine;
@@ -21,6 +22,10 @@ namespace Survive3D.TimeS {
             timeConfig = LoaderHelper.Get().GetAsset<TimeConfig>("Config/时间配置.asset");
             stateCount = timeConfig.timeStateConfigs.Length;
             mainLight = GameObject.Find("Directional Light").GetComponent<Light>();
+
+            // true时为白天
+            EventManager.Get().Fire(this, EventID.DayNightChange, new BoolEventArgs(curStateIndex <= 1));
+            EventManager.Get().Fire(this, EventID.NewDay, new IntEventArgs(dayNum));
         }
 
         private void Update() {
@@ -32,6 +37,7 @@ namespace Survive3D.TimeS {
 
             if (calculateTime >= GetConfig(curStateIndex).durationTime) {
                 EnterNextState();
+                EventManager.Get().Fire(this, EventID.DayNightChange, new BoolEventArgs(curStateIndex <= 1));
             }
 
             GetConfig(curStateIndex).CalculateLight(calculateTime, GetConfig(nextStateIndex)
@@ -42,8 +48,10 @@ namespace Survive3D.TimeS {
 
         private void EnterNextState() {
             curStateIndex = nextStateIndex;
-            if (curStateIndex == 0)
+            if (curStateIndex == 0) {
                 dayNum++;
+                EventManager.Get().Fire(this, EventID.NewDay, new IntEventArgs(dayNum));
+            }
             calculateTime = 0;
 
             var config = GetConfig(curStateIndex);

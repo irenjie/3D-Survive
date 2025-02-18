@@ -1,8 +1,9 @@
 using MTLFramework.UI;
+using Survive3D.Data;
 using System.Collections.Generic;
 using UnityEngine;
 
-namespace Survive3D.Item {
+namespace Survive3D.Config {
     public abstract class UI_InventoryWindowBase : BasePanel {
         protected InventoryData inventoryData;
         protected List<UI_SlotItem> slots;

@@ -4,9 +4,9 @@ using System.Collections.Generic;
 
 namespace MTLFramework.Event {
     public class EventPool<T> where T : GameEventArgs {
-        private readonly Dictionary<int, EventHandler<T>> _dic = new Dictionary<int, EventHandler<T>>();
+        private readonly Dictionary<EventID, EventHandler<T>> _dic = new Dictionary<EventID, EventHandler<T>>();
 
-        public void Subscribe(int id, EventHandler<T> handler) {
+        public void Subscribe(EventID id, EventHandler<T> handler) {
             if (handler == null)
                 return;
 
@@ -23,13 +23,13 @@ namespace MTLFramework.Event {
             }
         }
 
-        public void UnSubscribe(int id, EventHandler<T> handler) {
+        public void UnSubscribe(EventID id, EventHandler<T> handler) {
             if (handler != null && _dic.TryGetValue(id, out EventHandler<T> handlers)) {
                 handlers -= handler;
             }
         }
 
-        public bool Contains(int id, EventHandler<T> handler) {
+        public bool Contains(EventID id, EventHandler<T> handler) {
             if (handler == null || !_dic.TryGetValue(id, out EventHandler<T> handlers))
                 return false;
 
@@ -42,7 +42,7 @@ namespace MTLFramework.Event {
             return false;
         }
 
-        public void Fire(Object sender, int id, T args) {
+        public void Fire(Object sender, EventID id, T args) {
             _dic.TryGetValue(id, out EventHandler<T> handlers);
             if (handlers != null) {
                 handlers(sender, args);

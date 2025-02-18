@@ -1,9 +1,10 @@
 using Extensions;
+using Survive3D.Data;
 using System.Linq;
 using UnityEngine;
 
 
-namespace Survive3D.Item {
+namespace Survive3D.Config {
     public class UI_MainInventoryWindow : UI_InventoryWindowBase {
         private WeaponInventoryData weaponInventoryData;
 
@@ -25,7 +26,7 @@ namespace Survive3D.Item {
             slotTFs = null;
 
             weaponSlot = root.Find<UI_SlotItem>("bg/UI_WeaponSlot");
-            weaponSlot.Init(slots.Count, this,true);
+            weaponSlot.Init(slots.Count, this, true);
         }
 
         public override void SetItem(int index, ItemData itemData) {

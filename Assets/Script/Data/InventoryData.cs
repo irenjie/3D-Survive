@@ -1,7 +1,8 @@
+using Survive3D.Config;
 using System;
 using UnityEngine;
 
-namespace Survive3D.Item {
+namespace Survive3D.Data {
     /// <summary>
     /// 背包（下方格子）数据
     /// </summary>

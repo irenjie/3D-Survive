@@ -11,15 +11,15 @@ namespace MTLFramework.Event {
             _eventPool = new EventPool<GameEventArgs>();
         }
 
-        public void Subscribe(int id, EventHandler<GameEventArgs> handler) {
+        public void Subscribe(EventID id, EventHandler<GameEventArgs> handler) {
             _eventPool.Subscribe(id, handler);
         }
 
-        public void UnSubscribe(int id, EventHandler<GameEventArgs> handler) {
+        public void UnSubscribe(EventID id, EventHandler<GameEventArgs> handler) {
             _eventPool.UnSubscribe(id, handler);
         }
 
-        public void Fire(System.Object sender, int id, GameEventArgs args) {
+        public void Fire(System.Object sender, EventID id, GameEventArgs args) {
             _eventPool.Fire(sender, id, args);
         }
     }

@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using UnityEditor;
 using UnityEngine;
 
-namespace Survive3D.Item {
+namespace Survive3D.Config {
     public enum ItemType {
         [LabelText("装备")] Weapon,
         [LabelText("消耗品")] Consumable,
